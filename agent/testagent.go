@@ -5,7 +5,6 @@ import (
 	"context"
 	"crypto/x509"
 	"fmt"
-	"github.com/armon/go-metrics"
 	"io"
 	"math/rand"
 	"net"
@@ -17,6 +16,7 @@ import (
 	"text/template"
 	"time"
 
+	metrics "github.com/armon/go-metrics"
 	"github.com/hashicorp/go-hclog"
 	uuid "github.com/hashicorp/go-uuid"
 
@@ -83,8 +83,7 @@ type TestAgent struct {
 	// It is valid after Start().
 	*Agent
 
-	// NoWaitForStartup, if false, will wait for the agent to be up or for leader
-	// election to have happened before finishing the start process for an Agent
+	// NoWaitForStartup, if false, will start the anti entropy sync and waitForUp() (see *waitForUp()).
 	NoWaitForStartup bool
 }
 
@@ -231,7 +230,6 @@ func (a *TestAgent) Start(t *testing.T) error {
 	if !a.NoWaitForStartup {
 		// Start the anti-entropy syncer
 		a.Agent.StartSync()
-
 
 		if err := a.waitForUp(); err != nil {
 			a.Shutdown()

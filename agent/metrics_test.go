@@ -7,14 +7,14 @@ import (
 	"testing"
 )
 
-// TestMetrics_ConsulAutopilotHealthy_Prometheus adds testing around
+// TestHTTPHandlers_AgentMetrics_ConsulAutopilotHealthy_Prometheus adds testing around
 // the published autopilot metrics on https://www.consul.io/docs/agent/telemetry#autopilot
-func TestMetrics_ConsulAutopilotHealthy_Prometheus(t *testing.T) {
+func TestHTTPHandlers_AgentMetrics_ConsulAutopilotHealthy_Prometheus(t *testing.T) {
 	checkForShortTesting(t)
 	t.Parallel()
 
 	// configure agent to emit Prometheus metrics
-	hcl :=`
+	hcl := `
 	telemetry = {
 		prometheus_retention_time = "5s",
 		disable_hostname = true
@@ -23,7 +23,6 @@ func TestMetrics_ConsulAutopilotHealthy_Prometheus(t *testing.T) {
 
 	a := StartTestAgent(t, TestAgent{HCL: hcl, NoWaitForStartup: true})
 	defer a.Shutdown()
-
 
 	req, err := http.NewRequest("GET", "/v1/agent/metrics?format=prometheus", nil)
 	if err != nil {

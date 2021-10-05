@@ -52,6 +52,12 @@ func (d *AutopilotDelegate) NotifyState(state *autopilot.State) {
 		} else {
 			metrics.SetGauge([]string{"autopilot", "healthy"}, 0)
 		}
+	} else {
+
+		// if we are not a leader, emit NaN per
+		// https://www.consul.io/docs/agent/telemetry#autopilot
+		metrics.SetGauge([]string{"autopilot", "healthy"}, float32(math.NaN()))
+
 	}
 }
 
